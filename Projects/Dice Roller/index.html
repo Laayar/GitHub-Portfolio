@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Roll Simulator</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: whitesmoke;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            height: 100vh;
+
+        }
+
+        .container {
+            background: linear-gradient(145deg, #ffffff, #f5f5f5);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 
+                20px 20px 60px #d9d9d9,
+                -20px -20px 60px #ffffff,
+                inset 2px 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.08);
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, #1a1a1a, #4a4a4a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .dice {
+            font-size: 7rem;
+            margin: 5px;
+            animation-duration: 1s;
+            animation-fill-mode: forwards;
+        }
+
+        div img {
+            height: 100px;
+        }
+
+        .container button {
+            color: white;
+            background-color: skyblue;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: transform 0.3s ease;
+            margin: 15px 0;
+        }
+        .container button:hover{
+            background-color: rgb(79, 177, 216);
+            transform: translateY(-5px);
+        }
+
+        ul {
+            padding: 0;
+        }
+
+        li {
+            background-color: grey;
+            box-shadow: 5px 5px 10px 2px rgba(0, 0, 0, 0.3);
+            font-size: 20px;
+            list-style: none;
+            padding: 8px;
+            border-radius: 10px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Dice Roll Simulator</h1>
+    <div class="dice" id="diceImages"></div>
+    <button id="roll-button" onclick="rollDice()">Roll Dice</button>
+    <ul id="rollHistory">
+        
+    </ul>
+  </div>
+
+  <script>
+    // Store all rolls
+    const rollHistory = [];
+
+    function rollDice() {
+      const diceImages = document.getElementById("diceImages");
+      const rollHistoryList = document.getElementById("rollHistory");
+
+      // Get random number 1–6
+      const value = Math.floor(Math.random() * 6) + 1;
+
+      // Add to history
+      rollHistory.push(value);
+
+      // Update current dice image
+      diceImages.innerHTML = `<img src="images/dice-six-faces-${value}.png" alt="Dice ${value}">`;
+
+      // Update history list
+      rollHistoryList.innerHTML = "";
+      for (let i = 0; i < rollHistory.length; i++) {
+        rollHistoryList.innerHTML += `<li>Roll ${i + 1}: ${rollHistory[i]}</li>`;
+      }
+    }
+  </script>
+</body>
+</html>
