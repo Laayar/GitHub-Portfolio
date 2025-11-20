@@ -12,13 +12,13 @@ function UserTable() {
   };
 
   return (
-    <div>
-      <h1>Utulisateur</h1>
-      <table className="table table-dark table-striped">
-        <thead>
+    <div className="container mt-4">
+      <h1 className="mb-4">Utilisateurs</h1>
+      <table className="table table-striped">
+        <thead className="table-dark">
           <tr>
             <th>#</th>
-            <th>Nom Complete</th>
+            <th>Nom Complet</th>
             <th>Email</th>
             <th>Action</th>
           </tr>
@@ -26,12 +26,17 @@ function UserTable() {
         <tbody>
           {users.map((user) => (
             <tr key={user.id}>
-              <th>{user.id}</th>
-              <th>{user.nom}</th>
-              <th>{user.email}</th>
-              <th>
-                <button onClick={() =>handleRemoveUser(user.id)}>Supprimer</button>
-              </th>
+              <td>{user.id}</td>
+              <td>{user.nom}</td>
+              <td>{user.email}</td>
+              <td>
+                <button
+                  onClick={() => handleRemoveUser(user.id)}
+                  className="btn btn-danger btn-sm"
+                >
+                  Supprimer
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
