@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://github.com/Laayar/GitHub-Portfolio/tree/main/Projects/React/User%20Managment",
+  "homepage": "https://github.com/Laayar/GitHub-Portfolio/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
