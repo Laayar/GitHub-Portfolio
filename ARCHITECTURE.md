@@ -23,7 +23,7 @@ All components run locally on the server with no external API dependencies, ensu
 │  │  │  - Chat History  │:11434 │  - Inference Engine   │  │ │
 │  │  │  - Model Mgmt    │       │                       │  │ │
 │  │  │                  │       │  ┌─────────────────┐   │  │ │
-│  │  │  Port: 3000      │       │  │   Llama Model   │   │  │ │
+│  │  │  Port: 8080      │       │  │   Llama Model   │   │  │ │
 │  │  │  (internal)      │       │  │   (GGUF format) │   │  │ │
 │  │  └──────────────────┘       │  └─────────────────┘   │  │ │
 │  │                             └───────────────────────┘  │ │
@@ -53,8 +53,8 @@ Open WebUI is the front-end chat interface that users interact with through thei
 |-------------------|------------------------------------------|
 | Role              | Web-based chat interface                 |
 | Container Image   | `ghcr.io/open-webui/open-webui:main`     |
-| Internal Port     | 3000                                     |
-| Exposed Port      | 3000                                     |
+| Internal Port     | 8080                                     |
+| Exposed Port      | 3000 (mapped from 8080)                  |
 | Persistent Data   | Chat history, user accounts, settings    |
 | Volume Mount      | `open-webui:/app/backend/data`           |
 
