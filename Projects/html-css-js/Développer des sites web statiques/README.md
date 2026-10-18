@@ -21,4 +21,5 @@ A first-year web development project at OFPPT, built with **Abderrahman Chkaifi*
 [View Website](#)
 
 ### Screenshot
+<img width="1891" height="867" alt="image" src="https://github.com/user-attachments/assets/165f15e5-3b0b-40b2-9fd4-a9c4f6de577a" />
 
