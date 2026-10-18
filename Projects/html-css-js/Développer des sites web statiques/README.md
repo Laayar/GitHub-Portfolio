@@ -9,7 +9,7 @@ A responsive website created as a first web development project at OFPPT. The si
 ## Live Demo
 []()
 
-🔗 
+🔗 https://laayar.github.io/GitHub-Portfolio/Projects/html-css-js/D%C3%A9velopper%20des%20sites%20web%20statiques/
 
 ## Features
 []()
@@ -44,4 +44,3 @@ A responsive website created as a first web development project at OFPPT. The si
 - `contact.html` - Contact form and location map.
 
 ## Screenshot
-
