@@ -18,7 +18,7 @@ A first-year web development project at OFPPT, built with **Abderrahman Chkaifi*
 `Index.html` · `formations.html` · `nouveaux-stagiaires.html` · `anciens-stagiaires.html` · `connexion.html` · `contact.html`
 
 ### Live Demo
-[View Website](#)
+[View Website](https://laayar.github.io/GitHub-Portfolio/Projects/html-css-js/D%C3%A9velopper%20des%20sites%20web%20statiques/)
 
 ### Screenshot
 <img width="1891" height="867" alt="image" src="https://github.com/user-attachments/assets/165f15e5-3b0b-40b2-9fd4-a9c4f6de577a" />
