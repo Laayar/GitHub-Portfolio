@@ -1,0 +1,303 @@
+{
+  "name": "Weather Notifier",
+  "nodes": [
+    {
+      "id": "a1b2c3d4-0001-4000-8000-000000000001",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 7 * * *"
+            }
+          ]
+        }
+      },
+      "notes": "Runs every day at 07:00 AM. Change the cron expression to adjust the schedule."
+    },
+    {
+      "id": "a1b2c3d4-0002-4000-8000-000000000002",
+      "name": "Set City",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [460, 300],
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "city-field",
+              "name": "city",
+              "value": "Casablanca",
+              "type": "string"
+            },
+            {
+              "id": "recipient-field",
+              "name": "recipientEmail",
+              "value": "your-email@gmail.com",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "notes": "Change 'city' to any city name you want and 'recipientEmail' to your email address."
+    },
+    {
+      "id": "a1b2c3d4-0003-4000-8000-000000000003",
+      "name": "Fetch Weather",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300],
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.openweathermap.org/data/2.5/weather",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "queryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.city }}"
+            },
+            {
+              "name": "units",
+              "value": "metric"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": false
+            }
+          }
+        }
+      },
+      "credentials": {
+        "queryAuth": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "OpenWeatherMap API Key"
+        }
+      },
+      "continueOnFail": true,
+      "notes": "Fetches weather data from OpenWeatherMap. Create a 'Query Auth' credential named 'OpenWeatherMap API Key' with Name=appid and Value=<your_api_key>."
+    },
+    {
+      "id": "a1b2c3d4-0004-4000-8000-000000000004",
+      "name": "API Success Check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 300],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "api-check",
+              "leftValue": "={{ $json.main?.temp }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "notes": "Checks if the API returned valid temperature data. Routes to error email if the API call failed."
+    },
+    {
+      "id": "a1b2c3d4-0005-4000-8000-000000000005",
+      "name": "Check Temperature",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1120, 180],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "temp-condition",
+              "leftValue": "={{ $json.main.temp }}",
+              "rightValue": 22,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "notes": "If temperature >= 22°C → Warm (true branch). Otherwise → Cold (false branch)."
+    },
+    {
+      "id": "a1b2c3d4-0006-4000-8000-000000000006",
+      "name": "Send Warm Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1340, 80],
+      "parameters": {
+        "operation": "send",
+        "sendTo": "={{ $('Set City').item.json.recipientEmail }}",
+        "subject": "=☀️ Weather Alert: Warm in {{ $('Set City').item.json.city }}",
+        "message": "=<h2>☀️ Weather Update for {{ $('Set City').item.json.city }}</h2>\n<table style=\"border-collapse:collapse;width:100%;max-width:480px;\">\n  <tr><td style=\"padding:6px 12px;\"><strong>Status</strong></td><td style=\"padding:6px 12px;\">Warm 🌞</td></tr>\n  <tr style=\"background:#f9f9f9;\"><td style=\"padding:6px 12px;\"><strong>Temperature</strong></td><td style=\"padding:6px 12px;\">{{ $json.main.temp }}°C</td></tr>\n  <tr><td style=\"padding:6px 12px;\"><strong>Feels Like</strong></td><td style=\"padding:6px 12px;\">{{ $json.main.feels_like }}°C</td></tr>\n  <tr style=\"background:#f9f9f9;\"><td style=\"padding:6px 12px;\"><strong>Humidity</strong></td><td style=\"padding:6px 12px;\">{{ $json.main.humidity }}%</td></tr>\n  <tr><td style=\"padding:6px 12px;\"><strong>Conditions</strong></td><td style=\"padding:6px 12px;\">{{ $json.weather[0].description }}</td></tr>\n</table>\n<br>\n<p>💡 <em>Suggestion: Great day to enjoy the outdoors! Don't forget your sunscreen and sunglasses.</em></p>",
+        "options": {
+          "isHtml": true
+        }
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_GMAIL_CREDENTIAL_ID",
+          "name": "Gmail Account"
+        }
+      },
+      "notes": "Sends a warm-weather email. Make sure your Gmail OAuth2 credential is configured."
+    },
+    {
+      "id": "a1b2c3d4-0007-4000-8000-000000000007",
+      "name": "Send Cold Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1340, 280],
+      "parameters": {
+        "operation": "send",
+        "sendTo": "={{ $('Set City').item.json.recipientEmail }}",
+        "subject": "=🧊 Weather Alert: Cold in {{ $('Set City').item.json.city }}",
+        "message": "=<h2>🧊 Weather Update for {{ $('Set City').item.json.city }}</h2>\n<table style=\"border-collapse:collapse;width:100%;max-width:480px;\">\n  <tr><td style=\"padding:6px 12px;\"><strong>Status</strong></td><td style=\"padding:6px 12px;\">Cold 🥶</td></tr>\n  <tr style=\"background:#f9f9f9;\"><td style=\"padding:6px 12px;\"><strong>Temperature</strong></td><td style=\"padding:6px 12px;\">{{ $json.main.temp }}°C</td></tr>\n  <tr><td style=\"padding:6px 12px;\"><strong>Feels Like</strong></td><td style=\"padding:6px 12px;\">{{ $json.main.feels_like }}°C</td></tr>\n  <tr style=\"background:#f9f9f9;\"><td style=\"padding:6px 12px;\"><strong>Humidity</strong></td><td style=\"padding:6px 12px;\">{{ $json.main.humidity }}%</td></tr>\n  <tr><td style=\"padding:6px 12px;\"><strong>Conditions</strong></td><td style=\"padding:6px 12px;\">{{ $json.weather[0].description }}</td></tr>\n</table>\n<br>\n<p>💡 <em>Suggestion: Stay warm! Wear a coat and consider a hot drink before heading out.</em></p>",
+        "options": {
+          "isHtml": true
+        }
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_GMAIL_CREDENTIAL_ID",
+          "name": "Gmail Account"
+        }
+      },
+      "notes": "Sends a cold-weather email. Make sure your Gmail OAuth2 credential is configured."
+    },
+    {
+      "id": "a1b2c3d4-0008-4000-8000-000000000008",
+      "name": "Send Error Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1120, 440],
+      "parameters": {
+        "operation": "send",
+        "sendTo": "={{ $('Set City').item.json.recipientEmail }}",
+        "subject": "=⚠️ Weather Notifier Error – Could not fetch weather for {{ $('Set City').item.json.city }}",
+        "message": "=<h2>⚠️ Weather Notifier – API Error</h2>\n<p>The workflow could not retrieve weather data for <strong>{{ $('Set City').item.json.city }}</strong>.</p>\n<p><strong>Raw API response:</strong></p>\n<pre>{{ JSON.stringify($json, null, 2) }}</pre>\n<p>Please check that your OpenWeatherMap API key is valid and the city name is correct.</p>",
+        "options": {
+          "isHtml": true
+        }
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_GMAIL_CREDENTIAL_ID",
+          "name": "Gmail Account"
+        }
+      },
+      "notes": "Sends an error notification if the API call fails or returns unexpected data."
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set City",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set City": {
+      "main": [
+        [
+          {
+            "node": "Fetch Weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Weather": {
+      "main": [
+        [
+          {
+            "node": "API Success Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API Success Check": {
+      "main": [
+        [
+          {
+            "node": "Check Temperature",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Error Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Temperature": {
+      "main": [
+        [
+          {
+            "node": "Send Warm Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Cold Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "last"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "n8nVersion": "1.0.0"
+  },
+  "active": false,
+  "id": "weather-notifier-workflow"
+}
